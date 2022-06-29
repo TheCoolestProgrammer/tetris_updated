@@ -106,9 +106,22 @@ class Field():
         #stroke
         pygame.draw.rect(screen,self.line_color_border,(self.indent_left,y1, self.cell_size*self.width,self.cell_size*self.height),self.line_size_border)
 
+        #fallen bricks
+        for i in range(len(self.field)):
+            for j in range(len(self.field[i])):
+                if self.field[i][j] != 0 and self.field[i][j] !=1:
+                    c = self.cell_size
+                    l = self.indent_left
+                    b = self.indent_bottom
+                    h = self.height
+                    pygame.draw.rect(screen, self.field[i][j],(l + j * c, screen_height - (h - i) * c - b, c, c))
+
     def has_obstacle(self,shape):
         for cords in shape.coords:
             if cords[1] == len(self.field)-1:
+                return True
+        for cords in shape.coords:
+            if self.field[cords[1]+1][cords[0]] != 0 and self.field[cords[1]+1][cords[0]] != 1:
                 return True
         return False
     def move(self,shape):
@@ -121,6 +134,8 @@ class Field():
             for cords in shape.coords:
                 self.field[cords[1]][cords[0]] = 1
         else:
+            for cords in shape.coords:
+                self.field[cords[1]][cords[0]] = shape.color
             self.has_fallen_objects = False
 def drawing(field,shape):
     screen.fill((0, 0, 0))
@@ -167,13 +182,13 @@ def mainloop():
         if not field.has_fallen_objects:
             shape = add_shape_on_field(field)
             field.has_fallen_objects = True
-            field.move(shape)
+            # field.move(shape)
             # shape.show_on_field(field)
         else:
             field.move(shape)
-        # for i in field.field:
-        #     print(i)
-        # print("___________________________________")
+        for i in field.field:
+            print(i)
+        print("___________________________________")
         drawing(field,shape)
         pygame.time.delay(fps)
 
