@@ -7,10 +7,66 @@ screen = pygame.display.set_mode((screen_width,screen_height))
 process_running = True
 fps = 60
 
+class Shape():
+    def __init__(self,x,y,coords):
+        self.x = x
+        self.y = y
+        self.coords = coords
+    @staticmethod
+    def shape1(x,y,coords):
+
+        #  @@@@@@
+        #    @@
+
+        return Shape(x,y,[(x-1,y),(x+1,y),(x,y+1)])
+
+    @staticmethod
+    def shape2(x, y, coords):
+
+        #  @@@@@@@@
+
+        return Shape(x, y, [(x - 1, y), (x + 1, y), (x+2, y)])
+
+    @staticmethod
+    def shape3(x, y, coords):
+
+        #    @@@@
+        #  @@@@
+
+        return Shape(x, y, [(x + 1, y), (x, y+1), (x-1, y+1)])
+
+    @staticmethod
+    def shape4(x, y, coords):
+        #  @@@@
+        #    @@@@
+        return Shape(x, y, [(x - 1, y), (x, y+1), (x + 1, y+1)])
+
+    @staticmethod
+    def shape5(x, y, coords):
+        #  @@@@
+        #  @@@@
+        return Shape(x, y, [(x + 1, y), (x, y + 1), (x + 1, y + 1)])
+
+
+    @staticmethod
+    def shape6(x, y, coords):
+        #  @@@@@@
+        #      @@
+        return Shape(x, y, [(x - 1, y), (x+1, y ), (x + 1, y + 1)])
+
+    @staticmethod
+    def shape7(x, y, coords):
+        #  @@@@@@
+        #  @@
+        return Shape(x, y, [(x - 1, y), (x+1, y ), (x - 1, y + 1)])
+
+
 class Field():
     def __init__(self,width,height):
         self.width = width
         self.height = height
+
+        self.field = [[0]*self.width for i in range(self.height)]
         self.cell_size = 50
 
         self.indent_bottom = 20
@@ -26,14 +82,15 @@ class Field():
         y2 = screen_height-self.indent_bottom
         for x in range(self.indent_left,self.width*self.cell_size+self.indent_left,self.cell_size):
             pygame.draw.line(screen,self.line_color,(x,y1),(x,y2),self.line_size)
-        #stroke
-        pygame.draw.rect(screen,self.line_color_border,(self.indent_left,y1, self.cell_size*self.width,self.cell_size*self.height),self.line_size_border)
 
         #vertical field lines
         x1 = self.indent_left
         x2 = self.indent_left+self.cell_size*self.width
         for y in range(y1,y2,self.cell_size):
             pygame.draw.line(screen, self.line_color, (x1, y), (x2, y), self.line_size)
+
+        #stroke
+        pygame.draw.rect(screen,self.line_color_border,(self.indent_left,y1, self.cell_size*self.width,self.cell_size*self.height),self.line_size_border)
 
 def drawing(field):
     screen.fill((0, 0, 0))
