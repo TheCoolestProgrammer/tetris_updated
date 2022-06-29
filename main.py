@@ -116,27 +116,59 @@ class Field():
                     h = self.height
                     pygame.draw.rect(screen, self.field[i][j],(l + j * c, screen_height - (h - i) * c - b, c, c))
 
-    def has_obstacle(self,shape):
-        for cords in shape.coords:
-            if cords[1] == len(self.field)-1:
-                return True
-        for cords in shape.coords:
-            if self.field[cords[1]+1][cords[0]] != 0 and self.field[cords[1]+1][cords[0]] != 1:
-                return True
-        return False
-    def move(self,shape):
-        if not self.has_obstacle(shape):
-            i = 0
+    def has_obstacle(self,direction,shape):
+        if direction == "down":
             for cords in shape.coords:
-                self.field[cords[1]][cords[0]] =0
-                shape.coords[i] = (shape.coords[i][0],shape.coords[i][1]+1)
-                i+=1
+                if cords[1] == len(self.field)-1:
+                    return True
             for cords in shape.coords:
-                self.field[cords[1]][cords[0]] = 1
-        else:
+                if self.field[cords[1]+1][cords[0]] != 0 and self.field[cords[1]+1][cords[0]] != 1:
+                    return True
+            return False
+        elif direction == "right":
             for cords in shape.coords:
-                self.field[cords[1]][cords[0]] = shape.color
-            self.has_fallen_objects = False
+                if cords[0] == len(self.field[0])-1 or(self.field[cords[1]][cords[0]+1] != 0 and self.field[cords[1]][cords[0]+1] != 1):
+                    return True
+            return False
+        elif direction == "left":
+            for cords in shape.coords:
+                if cords[0] == 0 or (self.field[cords[1]][cords[0]-1] != 0 and self.field[cords[1]][cords[0]-1] != 1):
+                    return True
+            return False
+
+    def move(self,direction,shape):
+        if direction == "down":
+            if not self.has_obstacle(direction,shape):
+                i = 0
+                for cords in shape.coords:
+                    self.field[cords[1]][cords[0]] =0
+                    shape.coords[i] = (shape.coords[i][0],shape.coords[i][1]+1)
+                    i+=1
+                for cords in shape.coords:
+                    self.field[cords[1]][cords[0]] = 1
+            else:
+                for cords in shape.coords:
+                    self.field[cords[1]][cords[0]] = shape.color
+                self.has_fallen_objects = False
+        elif direction == "right":
+            if not self.has_obstacle(direction, shape):
+                i = 0
+                for cords in shape.coords:
+                    self.field[cords[1]][cords[0]] = 0
+                    shape.coords[i] = (shape.coords[i][0]+1, shape.coords[i][1])
+                    i += 1
+                for cords in shape.coords:
+                    self.field[cords[1]][cords[0]] = 1
+        elif direction == "left":
+            if not self.has_obstacle(direction, shape):
+                i = 0
+                for cords in shape.coords:
+                    self.field[cords[1]][cords[0]] = 0
+                    shape.coords[i] = (shape.coords[i][0]-1, shape.coords[i][1])
+                    i += 1
+                for cords in shape.coords:
+                    self.field[cords[1]][cords[0]] = 1
+
 def drawing(field,shape):
     screen.fill((0, 0, 0))
     shape.draw(field)
@@ -167,7 +199,7 @@ def add_shape_on_field(field):
     elif choise == 7:
         shape = shape.shape7(x,y)
     return(shape)
-def events_check():
+def events_check(field,shape):
     global process_running
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -175,17 +207,23 @@ def events_check():
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 process_running = False
+            elif event.key == pygame.K_a:
+                field.move("left",shape)
+            elif event.key == pygame.K_d:
+                field.move("right",shape)
+
 def mainloop():
     field = Field(8,18)
     while process_running:
-        events_check()
+
         if not field.has_fallen_objects:
             shape = add_shape_on_field(field)
             field.has_fallen_objects = True
             # field.move(shape)
             # shape.show_on_field(field)
         else:
-            field.move(shape)
+            field.move("down",shape)
+        events_check(field,shape)
         for i in field.field:
             print(i)
         print("___________________________________")
