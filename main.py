@@ -106,21 +106,26 @@ class Field():
         #stroke
         pygame.draw.rect(screen,self.line_color_border,(self.indent_left,y1, self.cell_size*self.width,self.cell_size*self.height),self.line_size_border)
 
-
+    def has_obstacle(self,shape):
+        for cords in shape.coords:
+            if cords[1] == len(self.field)-1:
+                return True
+        return False
     def move(self,shape):
-        i = 0
-        for cords in shape.coords:
-            self.field[cords[1]][cords[0]] =0
-            shape.coords[i] = (shape.coords[i][0],shape.coords[i][1]+1)
-            i+=1
-        for cords in shape.coords:
-            self.field[cords[1]][cords[0]] = 1
+        if not self.has_obstacle(shape):
+            i = 0
+            for cords in shape.coords:
+                self.field[cords[1]][cords[0]] =0
+                shape.coords[i] = (shape.coords[i][0],shape.coords[i][1]+1)
+                i+=1
+            for cords in shape.coords:
+                self.field[cords[1]][cords[0]] = 1
 
 def drawing(field,shape):
     screen.fill((0, 0, 0))
-
-    field.draw()
     shape.draw(field)
+    field.draw()
+
     pygame.display.update()
     # for sprite in sprites:
         # print(coordinates_changer(sprite.x, sprite.y))
@@ -165,9 +170,9 @@ def mainloop():
             # shape.show_on_field(field)
         else:
             field.move(shape)
-        for i in field.field:
-            print(i)
-        print("___________________________________")
+        # for i in field.field:
+        #     print(i)
+        # print("___________________________________")
         drawing(field,shape)
         pygame.time.delay(fps)
 
