@@ -79,7 +79,7 @@ class Field():
         self.height = height
 
         self.field = [[0]*self.width for i in range(self.height)]
-        self.cell_size = 50
+        self.cell_size = 35
 
         self.indent_bottom = 20
         self.indent_left = 20
@@ -120,7 +120,8 @@ class Field():
                 i+=1
             for cords in shape.coords:
                 self.field[cords[1]][cords[0]] = 1
-
+        else:
+            self.has_fallen_objects = False
 def drawing(field,shape):
     screen.fill((0, 0, 0))
     shape.draw(field)
@@ -132,7 +133,7 @@ def drawing(field,shape):
         # screen.blit(sprite.image, coordinates_changer2(sprite.x, sprite.y))
 
 def add_shape_on_field(field):
-    x=field.width//2
+    x=field.width//2-1
     y = 0
     shape = Shape(0,0,[])
     choise = random.randint(1,7)
@@ -160,7 +161,7 @@ def events_check():
             if event.key == pygame.K_ESCAPE:
                 process_running = False
 def mainloop():
-    field = Field(6,12)
+    field = Field(8,18)
     while process_running:
         events_check()
         if not field.has_fallen_objects:
