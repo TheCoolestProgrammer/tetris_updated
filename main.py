@@ -1,4 +1,4 @@
-import pygame
+import pygame, random
 pygame.init()
 clock = pygame.time.Clock()
 screen_width = 1280
@@ -13,7 +13,7 @@ class Shape():
         self.y = y
         self.coords = coords
     @staticmethod
-    def shape1(x,y,coords):
+    def shape1(x,y):
 
         #  @@@@@@
         #    @@
@@ -21,14 +21,14 @@ class Shape():
         return Shape(x,y,[(x-1,y),(x+1,y),(x,y+1)])
 
     @staticmethod
-    def shape2(x, y, coords):
+    def shape2(x, y):
 
         #  @@@@@@@@
 
         return Shape(x, y, [(x - 1, y), (x + 1, y), (x+2, y)])
 
     @staticmethod
-    def shape3(x, y, coords):
+    def shape3(x, y):
 
         #    @@@@
         #  @@@@
@@ -36,26 +36,26 @@ class Shape():
         return Shape(x, y, [(x + 1, y), (x, y+1), (x-1, y+1)])
 
     @staticmethod
-    def shape4(x, y, coords):
+    def shape4(x, y):
         #  @@@@
         #    @@@@
         return Shape(x, y, [(x - 1, y), (x, y+1), (x + 1, y+1)])
 
     @staticmethod
-    def shape5(x, y, coords):
+    def shape5(x, y):
         #  @@@@
         #  @@@@
         return Shape(x, y, [(x + 1, y), (x, y + 1), (x + 1, y + 1)])
 
 
     @staticmethod
-    def shape6(x, y, coords):
+    def shape6(x, y):
         #  @@@@@@
         #      @@
         return Shape(x, y, [(x - 1, y), (x+1, y ), (x + 1, y + 1)])
 
     @staticmethod
-    def shape7(x, y, coords):
+    def shape7(x, y):
         #  @@@@@@
         #  @@
         return Shape(x, y, [(x - 1, y), (x+1, y ), (x - 1, y + 1)])
@@ -76,6 +76,8 @@ class Field():
         self.line_size = 1
         self.line_color_border = (255,255,255)
         self.line_size_border = 5
+
+        self.has_fallen_objects=False
     def draw(self):
         #horisontal field lines
         y1 = screen_height-(self.cell_size*self.height)-self.indent_bottom
@@ -102,6 +104,26 @@ def drawing(field):
         # print(coordinates_changer(sprite.x, sprite.y))
         # screen.blit(sprite.image, coordinates_changer2(sprite.x, sprite.y))
 
+def add_shape_on_field(field):
+    x=field.width//2
+    y = 0
+    shape = Shape(0,0,[])
+    choise = random.randint(1,7)
+    if choise == 1:
+        shape = shape.shape1(x,y)
+    elif choise == 2:
+        shape = shape.shape2(x,y)
+    elif choise == 3:
+        shape = shape.shape3(x,y)
+    elif choise == 4:
+        shape = shape.shape4(x,y)
+    elif choise == 5:
+        shape = shape.shape5(x,y)
+    elif choise == 6:
+        shape = shape.shape6(x,y)
+    elif choise == 7:
+        shape = shape.shape7(x,y)
+    return(shape)
 def events_check():
     global process_running
     for event in pygame.event.get():
@@ -114,8 +136,11 @@ def mainloop():
     field = Field(6,12)
     while process_running:
         events_check()
-        pygame.time.delay(fps)
+        if not field.has_fallen_objects:
+            shape = add_shape_on_field(field)
         drawing(field)
+        pygame.time.delay(fps)
+
 
 if __name__ == '__main__':
     mainloop()
