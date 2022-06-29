@@ -12,20 +12,32 @@ class Shape():
         self.x = x
         self.y = y
         self.coords = coords
+        r = random.randint(40,255)
+        g = random.randint(40,255)
+        b = random.randint(40,255)
+        self.color = (r,g,b)
+    # def show_on_field(self,field):
+    def draw(self,field):
+        c = field.cell_size
+        l = field.indent_left
+        b = field.indent_bottom
+        h = field.height
+        for cords in self.coords:
+            pygame.draw.rect(screen,self.color,(l+cords[0]*c,screen_height-(h-cords[1])*c-b,c,c))
     @staticmethod
     def shape1(x,y):
 
         #  @@@@@@
         #    @@
 
-        return Shape(x,y,[(x-1,y),(x+1,y),(x,y+1)])
+        return Shape(x,y,[(x,y),(x-1,y),(x+1,y),(x,y+1)])
 
     @staticmethod
     def shape2(x, y):
 
         #  @@@@@@@@
 
-        return Shape(x, y, [(x - 1, y), (x + 1, y), (x+2, y)])
+        return Shape(x, y, [(x,y),(x - 1, y), (x + 1, y), (x+2, y)])
 
     @staticmethod
     def shape3(x, y):
@@ -33,32 +45,32 @@ class Shape():
         #    @@@@
         #  @@@@
 
-        return Shape(x, y, [(x + 1, y), (x, y+1), (x-1, y+1)])
+        return Shape(x, y, [(x,y),(x + 1, y), (x, y+1), (x-1, y+1)])
 
     @staticmethod
     def shape4(x, y):
         #  @@@@
         #    @@@@
-        return Shape(x, y, [(x - 1, y), (x, y+1), (x + 1, y+1)])
+        return Shape(x, y, [(x,y),(x - 1, y), (x, y+1), (x + 1, y+1)])
 
     @staticmethod
     def shape5(x, y):
         #  @@@@
         #  @@@@
-        return Shape(x, y, [(x + 1, y), (x, y + 1), (x + 1, y + 1)])
+        return Shape(x, y, [(x,y),(x + 1, y), (x, y + 1), (x + 1, y + 1)])
 
 
     @staticmethod
     def shape6(x, y):
         #  @@@@@@
         #      @@
-        return Shape(x, y, [(x - 1, y), (x+1, y ), (x + 1, y + 1)])
+        return Shape(x, y, [(x,y),(x - 1, y), (x+1, y ), (x + 1, y + 1)])
 
     @staticmethod
     def shape7(x, y):
         #  @@@@@@
         #  @@
-        return Shape(x, y, [(x - 1, y), (x+1, y ), (x - 1, y + 1)])
+        return Shape(x, y, [(x,y),(x - 1, y), (x+1, y ), (x - 1, y + 1)])
 
 
 class Field():
@@ -94,11 +106,21 @@ class Field():
         #stroke
         pygame.draw.rect(screen,self.line_color_border,(self.indent_left,y1, self.cell_size*self.width,self.cell_size*self.height),self.line_size_border)
 
-def drawing(field):
+
+    def move(self,shape):
+        i = 0
+        for cords in shape.coords:
+            self.field[cords[1]][cords[0]] =0
+            shape.coords[i] = (shape.coords[i][0],shape.coords[i][1]+1)
+            i+=1
+        for cords in shape.coords:
+            self.field[cords[1]][cords[0]] = 1
+
+def drawing(field,shape):
     screen.fill((0, 0, 0))
 
     field.draw()
-
+    shape.draw(field)
     pygame.display.update()
     # for sprite in sprites:
         # print(coordinates_changer(sprite.x, sprite.y))
@@ -138,7 +160,15 @@ def mainloop():
         events_check()
         if not field.has_fallen_objects:
             shape = add_shape_on_field(field)
-        drawing(field)
+            field.has_fallen_objects = True
+            field.move(shape)
+            # shape.show_on_field(field)
+        else:
+            field.move(shape)
+        for i in field.field:
+            print(i)
+        print("___________________________________")
+        drawing(field,shape)
         pygame.time.delay(fps)
 
 
