@@ -74,7 +74,7 @@ class Shape():
 
 class Future_field():
     def __init__(self):
-        self.width = 5
+        self.width = 6
         self.height = 2
         self.future_field = [[0] * self.width for i in range(self.height)]
         self.cell_size = 35
@@ -85,7 +85,7 @@ class Future_field():
         self.line_size = 1
         self.line_color_border = (255, 255, 255)
         self.line_size_border = 5
-    def draw(self):
+    def draw(self,coords):
         y1 = self.indent_above
         y2 = self.indent_above + self.cell_size*self.height
 
@@ -101,6 +101,9 @@ class Future_field():
 
         pygame.draw.rect(screen,self.line_color_border,(x1,y1,self.cell_size*self.width,self.cell_size*self.height),self.line_size_border)
 
+
+        for i in coords:
+            pygame.draw.rect(screen, (random.randint(50,255),random.randint(50,255),random.randint(50,255)), (x1+self.cell_size*(i[0]-1),y1+self.cell_size*i[1],self.cell_size,self.cell_size))
 class Field():
     def __init__(self,width,height):
         self.width = width
@@ -256,11 +259,11 @@ class Field():
         self.delete_rows(rows_to_delete)
         self.fall_rows(rows_to_delete)
 
-def drawing(field,shape,future_field):
+def drawing(field,shape,future_field,future_shape):
     screen.fill((0, 0, 0))
     shape.draw(field)
     field.draw()
-    future_field.draw()
+    future_field.draw(future_shape.coords)
     pygame.display.update()
     # for sprite in sprites:
         # print(coordinates_changer(sprite.x, sprite.y))
@@ -326,7 +329,7 @@ def mainloop():
         #     print()
         # print("________")
         # field.check_tetris()
-        drawing(field, shape,future_field)
+        drawing(field, shape,future_field,future_shape)
         pygame.time.delay(fps)
 
 
