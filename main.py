@@ -1,11 +1,11 @@
-import pygame, random
+import pygame, random,copy
 pygame.init()
 clock = pygame.time.Clock()
 screen_width = 1280
 screen_height = 720
 screen = pygame.display.set_mode((screen_width,screen_height))
 process_running = True
-fps = 180
+fps = 360
 
 class Shape():
     def __init__(self,x,y,coords):
@@ -120,23 +120,23 @@ class Field():
         # for cord in shape.coords:
         #     self.field[cord[1]][cord[0]] =0
 
-        cords_copy = shape.coords
+        cords_copy = copy.deepcopy(shape.coords)
         flag = False
         for i in range(len(shape.coords)):
+            # print(shape.x,shape.y, shape.coords[i][1])
             new_x = shape.x + shape.y - shape.coords[i][1]
             new_y = shape.coords[i][0] + shape.y - shape.x
-            if len(self.field[0]) > new_x >0 and new_y < len(self.field):
+            if len(self.field[0]) > new_x >=0 and new_y < len(self.field):
                 shape.coords[i] = (new_x,new_y)
             else:
                 flag = True
                 break
         if flag:
             shape.coords=cords_copy
-        else:
-            for i in cords_copy:
-                self.field[i[1]][i[0]] = 0
-            for i in shape.coords:
-                self.field[i[1]][i[0]] = 1
+        for i in cords_copy:
+            self.field[i[1]][i[0]] = 0
+        for i in shape.coords:
+            self.field[i[1]][i[0]] = 1
     def has_obstacle(self,direction,shape):
         if direction == "down":
             for cords in shape.coords:
@@ -193,7 +193,7 @@ class Field():
                     i += 1
                 for cords in shape.coords:
                     self.field[cords[1]][cords[0]] = 1
-                shape.y-=1
+                shape.x-=1
 def drawing(field,shape):
     screen.fill((0, 0, 0))
     shape.draw(field)
@@ -251,14 +251,14 @@ def mainloop():
         else:
             field.move("down",shape)
         events_check(field,shape)
-        for i in field.field:
-            for j in i:
-                if j !=0 and j!=1:
-                    print(1,end="")
-                else:
-                    print(j,end="")
-            print()
-        print("___________________________________")
+        # for i in field.field:
+        #     for j in i:
+        #         if j !=0 and j!=1:
+        #             print(1,end="")
+        #         else:
+        #             print(" ",end="")
+        #     print()
+        # print("___________________________________")
         drawing(field,shape)
         pygame.time.delay(fps)
 
