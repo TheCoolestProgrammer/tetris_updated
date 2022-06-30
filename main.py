@@ -126,7 +126,7 @@ class Field():
             # print(shape.x,shape.y, shape.coords[i][1])
             new_x = shape.x + shape.y - shape.coords[i][1]
             new_y = shape.coords[i][0] + shape.y - shape.x
-            if len(self.field[0]) > new_x >=0 and new_y < len(self.field):
+            if len(self.field[0]) > new_x >=0 and new_y < len(self.field) and (self.field[new_y][new_x] ==0 or self.field[new_y][new_x] ==1) :
                 shape.coords[i] = (new_x,new_y)
             else:
                 flag = True
@@ -251,14 +251,6 @@ def mainloop():
         else:
             field.move("down",shape)
         events_check(field,shape)
-        # for i in field.field:
-        #     for j in i:
-        #         if j !=0 and j!=1:
-        #             print(1,end="")
-        #         else:
-        #             print(" ",end="")
-        #     print()
-        # print("___________________________________")
         drawing(field,shape)
         pygame.time.delay(fps)
 
