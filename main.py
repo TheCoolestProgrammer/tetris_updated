@@ -72,6 +72,34 @@ class Shape():
         #  @@
         return Shape(x, y, [(x,y),(x - 1, y), (x+1, y ), (x - 1, y + 1)])
 
+class Future_field():
+    def __init__(self):
+        self.width = 5
+        self.height = 2
+        self.future_field = [[0] * self.width for i in range(self.height)]
+        self.cell_size = 35
+        self.indent_right = 600
+        self.indent_above = 100
+
+        self.line_color = (180, 180, 180)
+        self.line_size = 1
+        self.line_color_border = (255, 255, 255)
+        self.line_size_border = 5
+    def draw(self):
+        y1 = self.indent_above
+        y2 = self.indent_above + self.cell_size*self.height
+
+        x1 = screen_width -(self.width * self.cell_size)-self.indent_right
+        x2 = x1+self.cell_size*self.width
+
+        for x in range(x1,x2,  self.cell_size):
+            pygame.draw.line(screen, self.line_color, (x, y1), (x, y2), self.line_size)
+
+        # vertical field lines
+        for y in range(y1, y2, self.cell_size):
+            pygame.draw.line(screen, self.line_color, (x1, y), (x2, y), self.line_size)
+
+        pygame.draw.rect(screen,self.line_color_border,(x1,y1,self.cell_size*self.width,self.cell_size*self.height),self.line_size_border)
 
 class Field():
     def __init__(self,width,height):
@@ -225,23 +253,14 @@ class Field():
             if not flag:
                 self.has_fallen_objects = False
                 rows_to_delete.append(i)
-        for i in self.field:
-            for j in i:
-                if j != 0 and j != 1:
-                    print(1, end="")
-                else:
-                    print(j, end="")
-            print()
-        print("________")
-        print(rows_to_delete)
         self.delete_rows(rows_to_delete)
         self.fall_rows(rows_to_delete)
 
-def drawing(field,shape):
+def drawing(field,shape,future_field):
     screen.fill((0, 0, 0))
     shape.draw(field)
     field.draw()
-
+    future_field.draw()
     pygame.display.update()
     # for sprite in sprites:
         # print(coordinates_changer(sprite.x, sprite.y))
@@ -284,10 +303,13 @@ def events_check(field,shape):
 
 def mainloop():
     field = Field(8,18)
+    future_field = Future_field()
+    future_shape = add_shape_on_field(field)
     while process_running:
 
         if not field.has_fallen_objects:
-            shape = add_shape_on_field(field)
+            shape = future_shape
+            future_shape = add_shape_on_field(field)
             field.has_fallen_objects = True
             # field.move(shape)
             # shape.show_on_field(field)
@@ -295,16 +317,16 @@ def mainloop():
         else:
             events_check(field, shape)
             field.move("down",shape)
-        for i in field.field:
-            for j in i:
-                if j != 0 and j != 1:
-                    print(1, end="")
-                else:
-                    print(j, end="")
-            print()
-        print("________")
+        # for i in field.field:
+        #     for j in i:
+        #         if j != 0 and j != 1:
+        #             print(1, end="")
+        #         else:
+        #             print(j, end="")
+        #     print()
+        # print("________")
         # field.check_tetris()
-        drawing(field, shape)
+        drawing(field, shape,future_field)
         pygame.time.delay(fps)
 
 
