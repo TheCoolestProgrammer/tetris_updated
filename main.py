@@ -103,9 +103,6 @@ class Field():
         for y in range(y1,y2,self.cell_size):
             pygame.draw.line(screen, self.line_color, (x1, y), (x2, y), self.line_size)
 
-        #stroke
-        pygame.draw.rect(screen,self.line_color_border,(self.indent_left,y1, self.cell_size*self.width,self.cell_size*self.height),self.line_size_border)
-
         #fallen bricks
         for i in range(len(self.field)):
             for j in range(len(self.field[i])):
@@ -115,6 +112,10 @@ class Field():
                     b = self.indent_bottom
                     h = self.height
                     pygame.draw.rect(screen, self.field[i][j],(l + j * c, screen_height - (h - i) * c - b, c, c))
+        # stroke
+        pygame.draw.rect(screen, self.line_color_border,
+                         (self.indent_left, y1, self.cell_size * self.width, self.cell_size * self.height),
+                         self.line_size_border)
 
     def rotating(self,shape):
         # for cord in shape.coords:
@@ -173,6 +174,8 @@ class Field():
                 for cords in shape.coords:
                     self.field[cords[1]][cords[0]] = shape.color
                 self.has_fallen_objects = False
+                shape.coords = []
+                self.check_tetris()
 
         elif direction == "right":
             if not self.has_obstacle(direction, shape):
@@ -194,6 +197,46 @@ class Field():
                 for cords in shape.coords:
                     self.field[cords[1]][cords[0]] = 1
                 shape.x-=1
+    def delete_rows(self,rows_to_delete):
+        for i in rows_to_delete:
+            self.field[i] = [0]*self.width
+
+    def fall_rows(self,deleted_rows):
+        lowest_deep = self.height-1
+        for i in range(len(self.field)-1,-1,-1):
+            if len(deleted_rows)>0 and  i not in deleted_rows and i < max(deleted_rows):
+                flag = False
+                for j in self.field[i]:
+                    if j != 0:
+                        flag = True
+                        break
+                if flag:
+                    self.field[lowest_deep] = self.field[i]
+                    lowest_deep-=1
+                    self.field[i] = [0]*self.width
+    def check_tetris(self):
+        rows_to_delete=[]
+        for i in range(len(self.field)-1,-1,-1):
+            flag = False
+            for j in range(len(self.field[i])):
+                if self.field[i][j]==0:
+                    flag = True
+                    break
+            if not flag:
+                self.has_fallen_objects = False
+                rows_to_delete.append(i)
+        for i in self.field:
+            for j in i:
+                if j != 0 and j != 1:
+                    print(1, end="")
+                else:
+                    print(j, end="")
+            print()
+        print("________")
+        print(rows_to_delete)
+        self.delete_rows(rows_to_delete)
+        self.fall_rows(rows_to_delete)
+
 def drawing(field,shape):
     screen.fill((0, 0, 0))
     shape.draw(field)
@@ -248,10 +291,20 @@ def mainloop():
             field.has_fallen_objects = True
             # field.move(shape)
             # shape.show_on_field(field)
+            events_check(field,shape)
         else:
+            events_check(field, shape)
             field.move("down",shape)
-        events_check(field,shape)
-        drawing(field,shape)
+        for i in field.field:
+            for j in i:
+                if j != 0 and j != 1:
+                    print(1, end="")
+                else:
+                    print(j, end="")
+            print()
+        print("________")
+        # field.check_tetris()
+        drawing(field, shape)
         pygame.time.delay(fps)
 
 
