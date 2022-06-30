@@ -233,18 +233,16 @@ class Field():
             self.field[i] = [0]*self.width
 
     def fall_rows(self,deleted_rows):
-        lowest_deep = self.height-1
-        for i in range(len(self.field)-1,-1,-1):
-            if len(deleted_rows)>0 and  i not in deleted_rows and i < max(deleted_rows):
-                flag = False
-                for j in self.field[i]:
-                    if j != 0:
-                        flag = True
-                        break
-                if flag:
-                    self.field[lowest_deep] = self.field[i]
-                    lowest_deep-=1
-                    self.field[i] = [0]*self.width
+        if len(deleted_rows)>0:
+            lowest_deep = max(deleted_rows)
+            # deleted_rows = sorted(deleted_rows,reverse=True)
+            for i in range(lowest_deep-1,-1,-1):
+            # for i in deleted_rows:
+                if i in deleted_rows:
+                    continue
+                self.field[i+1] = self.field[i]
+                self.field[i] = [0]*self.width
+
     def check_tetris(self):
         rows_to_delete=[]
         for i in range(len(self.field)-1,-1,-1):
