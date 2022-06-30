@@ -5,7 +5,7 @@ screen_width = 1280
 screen_height = 720
 screen = pygame.display.set_mode((screen_width,screen_height))
 process_running = True
-fps = 60
+fps = 180
 
 class Shape():
     def __init__(self,x,y,coords):
@@ -116,6 +116,27 @@ class Field():
                     h = self.height
                     pygame.draw.rect(screen, self.field[i][j],(l + j * c, screen_height - (h - i) * c - b, c, c))
 
+    def rotating(self,shape):
+        # for cord in shape.coords:
+        #     self.field[cord[1]][cord[0]] =0
+
+        cords_copy = shape.coords
+        flag = False
+        for i in range(len(shape.coords)):
+            new_x = shape.x + shape.y - shape.coords[i][1]
+            new_y = shape.coords[i][0] + shape.y - shape.x
+            if len(self.field[0]) > new_x >0 and new_y < len(self.field):
+                shape.coords[i] = (new_x,new_y)
+            else:
+                flag = True
+                break
+        if flag:
+            shape.coords=cords_copy
+        else:
+            for i in cords_copy:
+                self.field[i[1]][i[0]] = 0
+            for i in shape.coords:
+                self.field[i[1]][i[0]] = 1
     def has_obstacle(self,direction,shape):
         if direction == "down":
             for cords in shape.coords:
@@ -136,6 +157,7 @@ class Field():
                     return True
             return False
 
+
     def move(self,direction,shape):
         if direction == "down":
             if not self.has_obstacle(direction,shape):
@@ -146,10 +168,12 @@ class Field():
                     i+=1
                 for cords in shape.coords:
                     self.field[cords[1]][cords[0]] = 1
+                shape.y+=1
             else:
                 for cords in shape.coords:
                     self.field[cords[1]][cords[0]] = shape.color
                 self.has_fallen_objects = False
+
         elif direction == "right":
             if not self.has_obstacle(direction, shape):
                 i = 0
@@ -159,6 +183,7 @@ class Field():
                     i += 1
                 for cords in shape.coords:
                     self.field[cords[1]][cords[0]] = 1
+                shape.x +=1
         elif direction == "left":
             if not self.has_obstacle(direction, shape):
                 i = 0
@@ -168,7 +193,7 @@ class Field():
                     i += 1
                 for cords in shape.coords:
                     self.field[cords[1]][cords[0]] = 1
-
+                shape.y-=1
 def drawing(field,shape):
     screen.fill((0, 0, 0))
     shape.draw(field)
@@ -211,6 +236,8 @@ def events_check(field,shape):
                 field.move("left",shape)
             elif event.key == pygame.K_d:
                 field.move("right",shape)
+            elif event.key == pygame.K_e:
+                field.rotating(shape)
 
 def mainloop():
     field = Field(8,18)
@@ -225,7 +252,12 @@ def mainloop():
             field.move("down",shape)
         events_check(field,shape)
         for i in field.field:
-            print(i)
+            for j in i:
+                if j !=0 and j!=1:
+                    print(1,end="")
+                else:
+                    print(j,end="")
+            print()
         print("___________________________________")
         drawing(field,shape)
         pygame.time.delay(fps)
