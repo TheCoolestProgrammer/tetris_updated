@@ -5,7 +5,7 @@ screen_width = 1280
 screen_height = 720
 screen = pygame.display.set_mode((screen_width,screen_height))
 process_running = True
-fps = 360
+fps = 200
 
 class Shape():
     def __init__(self,x,y,coords):
@@ -231,17 +231,29 @@ class Field():
     def delete_rows(self,rows_to_delete):
         for i in rows_to_delete:
             self.field[i] = [0]*self.width
-
-    def fall_rows(self,deleted_rows):
-        if len(deleted_rows)>0:
-            lowest_deep = max(deleted_rows)
-            # deleted_rows = sorted(deleted_rows,reverse=True)
-            for i in range(lowest_deep-1,-1,-1):
-            # for i in deleted_rows:
-                if i in deleted_rows:
-                    continue
-                self.field[i+1] = self.field[i]
-                self.field[i] = [0]*self.width
+        i = 0
+        counter = 0
+        rows_to_delete = sorted(rows_to_delete,reverse=True)
+        for i in rows_to_delete:
+            del(self.field[i])
+        for i in range(len(rows_to_delete)):
+            self.field.insert(0,[0]*self.width)
+    # def fall_rows(self,deleted_rows):
+    #     for i in self.field:
+    #         for j in i:
+    #             if j != 0 and j != 1:
+    #                 print(1, end="")
+    #             else:
+    #                 print(j, end="")
+    #         print()
+    #     print("________")
+    #     if len(deleted_rows)>0:
+    #         lowest_deep = max(deleted_rows)
+    #         for i in range(lowest_deep-1,-1,-1):
+    #             # if i == [0]*self.width:
+    #             #     continue
+    #             self.field[i+1] = self.field[i]
+    #             self.field[i] = [0]*self.width
 
     def check_tetris(self):
         rows_to_delete=[]
@@ -255,7 +267,7 @@ class Field():
                 self.has_fallen_objects = False
                 rows_to_delete.append(i)
         self.delete_rows(rows_to_delete)
-        self.fall_rows(rows_to_delete)
+        # self.fall_rows(rows_to_delete)
 
 def drawing(field,shape,future_field,future_shape):
     screen.fill((0, 0, 0))
